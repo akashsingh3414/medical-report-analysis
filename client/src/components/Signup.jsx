@@ -1,5 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
+import { loginFailure, loginStart, loginSuccess } from '../redux/user/user-slice'
+import { useDispatch, useSelector } from 'react-redux'
 
 function Signup() {
   const [fullName, setFullName] = useState('')
@@ -7,6 +9,8 @@ function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const dispatch = useDispatch();
+  const state = useSelector((state)=>{state})
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,11 +22,15 @@ function Signup() {
     try {
       const payload = { email, password };
       const response = await axios.post('/api/user/register', req);
+      dispatch(loginStart())
       if (response.status===200) {
+        dispatch(loginSuccess(response.data.user))
         navigate('/')
       }
     } catch (error) {
-      console.error('Login failed:', error.response?.data || error.message);
+      const errorDetails = {message: error.message, status: error.status}
+      dispatch(loginFailure(errorDetails))
+      console.error('Signup failed:', error.response?.data || error.message);
     }
   }
 

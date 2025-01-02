@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginFailure, loginStart, loginSuccess } from '../redux/user/user-slice'
 
 function Signin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const state = useSelector((state)=>{state});
 
   const req = {
     email, password
@@ -15,11 +19,15 @@ function Signin() {
     e.preventDefault();
     try {
       const payload = { email, password };
+      dispatch(loginStart())
       const response = await axios.post('/api/user/login', payload);
       if (response.status===200) {
+        dispatch(loginSuccess(response.data.user))
         navigate('/')
       }
     } catch (error) {
+      const errorDetails = {message: error.message, status: error.status}
+      dispatch(loginFailure(errorDetails))
       console.error('Login failed:', error.response?.data || error.message);
     }
   };
