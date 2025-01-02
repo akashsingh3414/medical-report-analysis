@@ -5,7 +5,6 @@ import reportRouter from './routes/report.routes.js';
 import userRouter from './routes/user.routes.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import { createClient } from '@supabase/supabase-js';
 
 dotenv.config()
 

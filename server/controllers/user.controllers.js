@@ -4,10 +4,14 @@ import { generateAccessToken, generateRefreshToken } from "../utils/generate-tok
 import { Report } from "../models/report.models.js"
 
 export const register = async (req, res) => {
-    const { email, password, fullName, mobileNo } = req.body;
+    const { email, password, fullName, mobileNo, confirmPassword } = req.body;
 
-    if (!email || !password || !fullName || !mobileNo) {
+    if (!email || !password || !confirmPassword || !fullName || !mobileNo) {
         return res.status(400).json({ message: "All fields are required" });
+    }
+    
+    if (password !== confirmPassword ) {
+        return res.status(400).json({ message: "Passwords do not match "});
     }
 
     try {
