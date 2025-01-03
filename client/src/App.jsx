@@ -2,8 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Header from "./components/Header"
 import Home from './pages/Home.jsx'
 import About from "./pages/About.jsx"
-import Contacts from "./pages/Contacts.jsx"
 import GetStarted from "./pages/GetStarted.jsx"
+import Footer from "./components/Footer.jsx"
 
 function App() {
   return (
@@ -14,10 +14,10 @@ function App() {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/aboutus' element={<About />} />
-            <Route path='/contact' element={<Contacts />} />
             <Route path='/getstarted' element={<GetStarted />} />         
           </Routes>
         </main>
+        <Footer />
       </div>
     </BrowserRouter>
   )

@@ -1,7 +1,8 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { loginFailure, loginStart, loginSuccess } from '../redux/user/user-slice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 function Signup() {
   const [fullName, setFullName] = useState('')
@@ -9,8 +10,9 @@ function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
   const dispatch = useDispatch();
-  const state = useSelector((state)=>{state})
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,9 +20,8 @@ function Signup() {
       alert("Passwords don't match")
       return
     }
-    const req = {email, fullName, password, confirmPassword, mobileNo}
     try {
-      const payload = { email, password };
+      const req = {email, fullName, password, confirmPassword, mobileNo}
       const response = await axios.post('/api/user/register', req);
       dispatch(loginStart())
       if (response.status===200) {
@@ -28,9 +29,9 @@ function Signup() {
         navigate('/')
       }
     } catch (error) {
-      const errorDetails = {message: error.message, status: error.status}
+      const errorDetails = {message: error?.response?.data?.message, status: error?.status}
       dispatch(loginFailure(errorDetails))
-      console.error('Signup failed:', error.response?.data || error.message);
+      setError(error?.response?.data?.message)
     }
   }
 
@@ -111,9 +112,11 @@ function Signup() {
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
+            onClick={handleSubmit}
           >
             Sign Up
           </button>
+          {error && <p className='inline-block text-red-500'>{error}</p>}
         </div>
       </form>
     </div>
@@ -121,4 +124,3 @@ function Signup() {
 }
 
 export default Signup
-

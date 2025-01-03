@@ -1,40 +1,36 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { loginFailure, loginStart, loginSuccess } from '../redux/user/user-slice'
 
 function Signin() {
   const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const state = useSelector((state)=>{state});
 
-  const req = {
-    email, password
-  }
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const payload = { email, password };
+      const req = { email, password };
       dispatch(loginStart())
-      const response = await axios.post('/api/user/login', payload);
+      const response = await axios.post('/api/user/login', req);
       if (response.status===200) {
         dispatch(loginSuccess(response.data.user))
         navigate('/')
       }
     } catch (error) {
-      const errorDetails = {message: error.message, status: error.status}
+      const errorDetails = {message: error?.response?.data?.message, status: error?.status}
       dispatch(loginFailure(errorDetails))
-      console.error('Login failed:', error.response?.data || error.message);
+      setError(error?.response?.data?.message)
     }
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <form onSubmit={handleSubmit} className="bg-white rounded px-8 pt-6 pb-8">
+      <form onSubmit={handleLogin} className="bg-white rounded px-8 pt-6 pb-8">
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
             Email
@@ -70,6 +66,7 @@ function Signin() {
           >
             Sign In
           </button>
+          {error && <p className='inline-block text-red-500'>{error}</p>}
           {/* <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">
             Forgot Password?
           </a> */}
